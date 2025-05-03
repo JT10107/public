@@ -1,0 +1,4 @@
+Set-executionPolicy -ExecutionPolicy bypass -force
+Disable-NetAdapter -Name "Wi-Fi" -Confirm:$false
+start-sleep 5
+Enable-NetAdapter -Name "Wi-Fi" -Confirm:$false

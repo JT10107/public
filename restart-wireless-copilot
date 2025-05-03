@@ -1,0 +1,14 @@
+$WirelessAdapter = Get-NetAdapter | Where-Object {$_.InterfaceDescription -like "*Wi-Fi*" -and $_.Status -eq "Up"}
+
+if ($WirelessAdapter) {
+    Write-Host "Disabling the wireless adapter: $($WirelessAdapter.Name)..."
+    Disable-NetAdapter -Name $WirelessAdapter.Name -Confirm:$false
+    Start-Sleep -Seconds 3 # Wait for 3 seconds to ensure the adapter is disabled
+
+    Write-Host "Enabling the wireless adapter: $($WirelessAdapter.Name)..."
+    Enable-NetAdapter -Name $WirelessAdapter.Name -Confirm:$false
+    
+    Write-Host "Wireless adapter has been restarted successfully."
+} else {
+    Write-Host "No active wireless adapter found."
+}

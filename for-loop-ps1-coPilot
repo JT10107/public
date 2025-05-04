@@ -1,17 +1,16 @@
 <#
 .SYNOPSIS
-    Reads a file and iterates through its lines using a for loop.
+    Reads a list of IP addresses from a file and pings each IP address with a 5-second delay.
 
 .DESCRIPTION
-    This script reads the contents of a file and processes each line
-    individually using a for loop. It outputs each line with its corresponding
-    line number.
+    This script reads IP addresses from a file, pings each IP address, and waits 5 seconds before proceeding to the next one.
+    It outputs the result of each ping to the console.
 
 .PARAMETER FilePath
-    The full path of the file to be read.
+    The full path of the file containing the list of IP addresses (one per line).
 
 .EXAMPLE
-    ./Read-FileWithForLoop.ps1 -FilePath "C:\01-test\test.txt"
+    ./Ping-IPAddresses.ps1 -FilePath "C:\01-test\test.txt"
 #>
 
 param (
@@ -26,10 +25,22 @@ if (-Not (Test-Path -Path $FilePath)) {
 }
 
 # Read all lines from the file into an array
-$Lines = Get-Content -Path $FilePath
+$IPAddresses = Get-Content -Path $FilePath
 
-# Iterate through the lines using a for loop
-for ($i = 0; $i -lt $Lines.Count; $i++) {
-    $CurrentLine = $Lines[$i]
-    Write-Host "Line $($i + 1): $CurrentLine"
+# Iterate through the IP addresses and ping each one
+for ($i = 0; $i -lt $IPAddresses.Count; $i++) {
+    $IPAddress = $IPAddresses[$i].Trim() # Trim any leading/trailing whitespace
+    if ($IPAddress -ne "") {
+        Write-Host "Pinging IP address: $IPAddress"
+        $PingResult = Test-Connection -ComputerName $IPAddress -Count 1 -Quiet
+
+        if ($PingResult) {
+            Write-Host "Ping to $IPAddress succeeded." -ForegroundColor Green
+        } else {
+            Write-Host "Ping to $IPAddress failed." -ForegroundColor Red
+        }
+
+        # Wait for 5 seconds before pinging the next IP
+        Start-Sleep -Seconds 5
+    }
 }

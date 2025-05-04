@@ -14,3 +14,5 @@ if ($WirelessAdapter) {
 } else {
     Write-Host "No active wireless adapter found."
 }
+
+write-host "hello"

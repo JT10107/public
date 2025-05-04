@@ -1,31 +1,44 @@
 <#
 .SYNOPSIS
-    Reads a list of IP addresses from a file and pings each IP address with a 5-second delay.
+    Reads a list of IP addresses from a file, pings each one, and writes failed IPs to an output file.
 
 .DESCRIPTION
     This script reads IP addresses from a file, pings each IP address, and waits 5 seconds before proceeding to the next one.
-    It outputs the result of each ping to the console.
+    It logs the IPs that fail the ping to a specified output file.
 
-.PARAMETER FilePath
+.PARAMETER InputFilePath
     The full path of the file containing the list of IP addresses (one per line).
 
+.PARAMETER OutputFilePath
+    The full path of the file where failed IP addresses will be logged.
+
 .EXAMPLE
-    ./Ping-IPAddresses.ps1 -FilePath "C:\01-test\test.txt"
+    ./test.ps1 -InputFilePath "C:\path\to\iplist.txt" -OutputFilePath "C:\path\to\failed_ips.txt"
 #>
 
 param (
     [Parameter(Mandatory = $true)]
-    [string]$FilePath
+    [string]$InputFilePath,
+
+    [Parameter(Mandatory = $true)]
+    [string]$OutputFilePath
 )
 
-# Check if the file exists
-if (-Not (Test-Path -Path $FilePath)) {
-    Write-Host "File not found: $FilePath" -ForegroundColor Red
+# Check if the input file exists
+if (-Not (Test-Path -Path $InputFilePath)) {
+    Write-Host "Input file not found: $InputFilePath" -ForegroundColor Red
     exit
 }
 
-# Read all lines from the file into an array
-$IPAddresses = Get-Content -Path $FilePath
+# Clear the output file if it exists, or create a new one
+if (Test-Path -Path $OutputFilePath) {
+    Clear-Content -Path $OutputFilePath
+} else {
+    New-Item -Path $OutputFilePath -ItemType File | Out-Null
+}
+
+# Read all lines from the input file into an array
+$IPAddresses = Get-Content -Path $InputFilePath
 
 # Iterate through the IP addresses and ping each one
 for ($i = 0; $i -lt $IPAddresses.Count; $i++) {
@@ -38,9 +51,14 @@ for ($i = 0; $i -lt $IPAddresses.Count; $i++) {
             Write-Host "Ping to $IPAddress succeeded." -ForegroundColor Green
         } else {
             Write-Host "Ping to $IPAddress failed." -ForegroundColor Red
+
+            # Log the failed IP address to the output file
+            Add-Content -Path $OutputFilePath -Value $IPAddress
         }
 
         # Wait for 5 seconds before pinging the next IP
         Start-Sleep -Seconds 5
     }
 }
+
+Write-Host "Script completed. Failed IP addresses are logged in: $OutputFilePath" -ForegroundColor Cyan

@@ -5,18 +5,7 @@ if ($WirelessAdapter) {
     Write-Host "Disabling the wireless adapter: $($WirelessAdapter.Name)..."
     Disable-NetAdapter -Name $WirelessAdapter.Name -Confirm:$false
 
-    # Countdown from 10 seconds
-$Countdown = 10
-
-Write-Host "Starting countdown..."
-for ($i = $Countdown; $i -ge 1; $i--) {
-    Write-Host "$i seconds remaining..." -ForegroundColor Yellow
-    Start-Sleep -Seconds 1
-}
-
-Write-Host "Countdown complete!" -ForegroundColor Gree
-
-    Start-Sleep -Seconds 10 # Wait for 3 seconds to ensure the adapter is disabled
+   Start-Sleep -Seconds 10 # Wait for 10 seconds to ensure the adapter is disabled
 
     Write-Host "Enabling the wireless adapter: $($WirelessAdapter.Name)..."
     Enable-NetAdapter -Name $WirelessAdapter.Name -Confirm:$false

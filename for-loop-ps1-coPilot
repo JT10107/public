@@ -1,0 +1,35 @@
+<#
+.SYNOPSIS
+    Reads a file and iterates through its lines using a for loop.
+
+.DESCRIPTION
+    This script reads the contents of a file and processes each line
+    individually using a for loop. It outputs each line with its corresponding
+    line number.
+
+.PARAMETER FilePath
+    The full path of the file to be read.
+
+.EXAMPLE
+    ./Read-FileWithForLoop.ps1 -FilePath "C:\01-test\test.txt"
+#>
+
+param (
+    [Parameter(Mandatory = $true)]
+    [string]$FilePath
+)
+
+# Check if the file exists
+if (-Not (Test-Path -Path $FilePath)) {
+    Write-Host "File not found: $FilePath" -ForegroundColor Red
+    exit
+}
+
+# Read all lines from the file into an array
+$Lines = Get-Content -Path $FilePath
+
+# Iterate through the lines using a for loop
+for ($i = 0; $i -lt $Lines.Count; $i++) {
+    $CurrentLine = $Lines[$i]
+    Write-Host "Line $($i + 1): $CurrentLine"
+}

@@ -1,0 +1,24 @@
+#save file as FileWithForLoop.ps1 and add parameter
+#example. Read-FileWithForLoop.ps1 -FilePath "C:\01-test\test.txt"
+
+function Read-FileWithForLoop {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$FilePath
+    )
+
+    # Check if the file exists
+    if (-Not (Test-Path -Path $FilePath)) {
+        Write-Host "File not found: $FilePath" -ForegroundColor Red
+        return
+    }
+
+    # Read all lines from the file into an array
+    $Lines = Get-Content -Path $FilePath
+
+    # Iterate through the lines using a for loop
+    for ($i = 0; $i -lt $Lines.Count; $i++) {
+        $CurrentLine = $Lines[$i]
+        Write-Host "Line $($i + 1): $CurrentLine"
+    }
+}
